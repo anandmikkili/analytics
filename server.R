@@ -1,7 +1,3 @@
-library(shiny)
-library(shinydashboard)
-library(data.table)
-library(sqldf)
 shinyServer(function(input, output){
   fileinput <- fread("D:\\Personal\\Shiny\\FULL_REQ.txt")
   
