@@ -1,10 +1,12 @@
+library(shiny)
+library(shinydashboard)
 shinyUI(
   dashboardPage(
     dashboardHeader(title = "6D Telecom Solutions"),
     dashboardSidebar(
       sidebarMenu(
         menuItem("Churn Reporting", tabName = "churnreporting",icon = icon("database", lib="font-awesome"), startExpanded = TRUE, menuItem("Train Summary Reports", tabName = "trainsummaryReport",startExpanded = TRUE,
-                                                                                                                                           menuItem("Prediction Summary",tabName = "trainOv"),menuItem("ARPU Status",tabName = "trainArpu", startExpanded = TRUE,menuSubItem("High",tabName = "trainOH"),menuSubItem("Medium",tabName = "trainOM"),menuSubItem("Low",tabName = "trainOL")) ,menuItem("CPI Score",tabName = "traincpiScore"),menuItem("Age On Network",tabName = "trainaon"),menuItem("Tariff",tabName = "traintariff"),menuItem("Region",tabName = "trainregion"),menuItem("Value Segment",tabName = "trainvaluesegment")),
+                                                                                                                                           menuItem("Prediction Summary",tabName = "trainPS"),menuItem("ARPU Status",tabName = "trainArpu", startExpanded = TRUE,menuSubItem("Overall",tabName = "trainOv"),menuSubItem("High",tabName = "trainOH"),menuSubItem("Medium",tabName = "trainOM"),menuSubItem("Low",tabName = "trainOL")) ,menuItem("CPI Score",tabName = "traincpiScore"),menuItem("Age On Network",tabName = "trainaon"),menuItem("Tariff",tabName = "traintariff"),menuItem("Region",tabName = "trainregion"),menuItem("Value Segment",tabName = "trainvaluesegment")),
                  menuItem("Test Summary Reports", tabName = "testsummaryReport", startExpanded = TRUE,
                           menuItem("Prediction Status",tabName = "testpredstatus"),menuItem("CPI Score",tabName = "testcpiScore"),menuItem("Age On Network",tabName = "testaon"),menuItem("Tariff",tabName = "testtariff"),menuItem("Region",tabName = "testregion"),menuItem("Value Segment",tabName = "testvaluesegment")),
                  menuItem("Detailed Reports", tabName = "detailedReport",startExpanded = TRUE,
@@ -21,11 +23,19 @@ shinyUI(
       )),
     dashboardBody(
       tabItems(
+        tabItem("trainPS", fluidPage(
+          fluidRow(
+            tabsetPanel(
+              tabPanel(title="Table",icon = icon("table"), tableOutput("table_trainps")),
+              tabPanel(title="Plot",icon = icon("bar-chart-o"),plotlyOutput("plot_trainps", height = "200px"),selectInput("select", "Select", label = h2("Selection Pane"),choices = list(TotalTrainingSet = "TotalTrainingSet", High = "High",Medium="Medium",Low="Low"))),
+              tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_trainps"))
+            )
+          ))),
         tabItem("trainOv", fluidPage(
           fluidRow(
           tabsetPanel(
             tabPanel(title="Table",icon = icon("table"), tableOutput("table_trainov")),
-            tabPanel(title="Plot",icon = icon("bar-chart-o"),plotlyOutput("plot_trainov", height = "200px"),selectInput("select", "Select", label = h2("Selection Pane"),choices = list(TotalTrainingSet = "TotalTrainingSet", High = "High",Medium="Medium",Low="Low"))),
+            tabPanel(title="Plot",icon = icon("bar-chart-o"),plotlyOutput("plot_trainov", height = "200px"),selectInput("select", "Select", label = h2("Selection Pane"),choices = list(PredictedNonUser = "PredictedNonUser", PredictedUser = "PredictedUser",ActualChurners="ActualChurners",GrandTotal="GrandTotal"))),
             tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_trainov"))
           )
         ))),
@@ -129,27 +139,43 @@ shinyUI(
             tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_testValue"))
           )
         )),
-      tabItem("downReports", fluidRow(
-        column(width = 4,
-               box(title="Prediction Period",width = NULL, status = "primary", solidHeader = TRUE,
-                   selectInput("reportperiod", "",
-                               choices = c(
-                                 "201801" = 201801,
-                                 "201712" = 201712,
-                                 "201711" = 201711,
-                                 "201710" = 201711
-                               )
-                   ))
-        ),
-        column(width = 4,
-               box(title="Report Type",width = NULL, status = "primary", solidHeader = TRUE,
-                   selectInput("reporttype", "",
-                               choices = c(
-                                 "Prediction Summary","Churn Reason"
-                               )
-                   ))
+      tabItem("downReports", fluidPage(
+        fluidRow(
+          column(width = 8),
+          column(width = 4,
+                 box(title="Prediction Period",width = NULL, status = "primary", solidHeader = TRUE,
+                     selectInput("dreportperiod", "",
+                                 choices = c(
+                                   "201801" = 201801,
+                                   "201712" = 201712,
+                                   "201711" = 201711,
+                                   "201710" = 201711
+                                 )
+                     ),
+                     downloadButton("downloadData", "   Download Report")
+                     )
+          )
         )
-      ))
+      )),
+      tabItem("uploadReports",fluidPage(
+        fluidRow(
+          column(width = 8),
+          column(width = 4,
+                 box(title="Prediction Period",width = NULL, status = "primary", solidHeader = TRUE,
+                     selectInput("ureportperiod", "",
+                                 choices = c(
+                                   "201801" = 201801,
+                                   "201712" = 201712,
+                                   "201711" = 201711,
+                                   "201710" = 201711
+                                 )
+                     ),
+                     downloadButton("uploadData", "   Upload Report")
+                 )
+          )
+        )
+      ) )
+      
       )
       
     )

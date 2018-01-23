@@ -1,0 +1,47 @@
+SummaryReports<-function(){
+wb<-createWorkbook(type="xlsx") 
+
+#setwd("C:\\Users\\rashmi.s\\Desktop\\")
+#source("C:\\Users\\rashmi.s\\Desktop\\RFiles\\LatestChanges\\TrainRelatedDetails.R")
+#source("C:\\Users\\rashmi.s\\Desktop\\RFiles\\LatestChanges\\TestRelatedDetails.R")
+#fileinput <- fread("C:\\Users\\rashmi.s\\Desktop\\CHURN\\DATA_REPORTING\\FULL_REQ.txt")
+
+TITLE_STYLE <- CellStyle(wb)+ Font(wb, heightInPoints=16, color="blue",isBold=TRUE, underline=1)
+TABLE_ROWNAMES_STYLE <- CellStyle(wb) + Font(wb,color="black", isBold=TRUE)
+TABLE_TARGET_STYLE<-CellStyle(wb) + Font(wb, heightInPoints=10, isBold=TRUE, color ="9", name="Arial") + Fill(foregroundColor="#0069AA")
+TABLE_CONTROL_STYLE<-CellStyle(wb) + Font(wb, heightInPoints=10, isBold=TRUE, color ="9", name="Arial") + Fill(foregroundColor="#000000")
+TABLE_COLNAMES_STYLE <- CellStyle(wb) + Fill(foregroundColor = "#0014AA")+ Font(wb, heightInPoints=10,isBold=TRUE,color ="9", name="Arial") + Alignment(wrapText=TRUE, horizontal="ALIGN_CENTER") + Border(color="#0014AA", position=c("TOP","RIGHT","BOTTOM","LEFT"), pen=c("BORDER_THICK","BORDER_THICK","BORDER_THICK","BORDER_THICK")) 
+CS2<-CellStyle(wb) + Alignment(horizontal="ALIGN_CENTER") + Border(color="black", position=c("TOP","RIGHT","BOTTOM","LEFT"), pen=c("BORDER_THIN","BORDER_THIN","BORDER_THIN","BORDER_THIN")) 
+CS1<-CellStyle(wb) + Alignment(horizontal="ALIGN_RIGHT") + Border(color="black", position=c("TOP","RIGHT","BOTTOM","LEFT"), pen=c("BORDER_THIN","BORDER_THIN","BORDER_THIN","BORDER_THIN")) 
+CS3 <- CellStyle(wb) + Fill(foregroundColor = "#000000") + Font(wb, heightInPoints=10,isBold=TRUE,color ="9", name="Arial") + Alignment(wrapText=TRUE, horizontal="ALIGN_CENTER") + Border(color="black", position=c("TOP","RIGHT","BOTTOM","LEFT"), pen=c("BORDER_THICK","BORDER_THICK","BORDER_THICK","BORDER_THICK")) 
+CS4 <- CellStyle(wb) + Fill(foregroundColor = "#0069AA") + Font(wb, heightInPoints=10,isBold=TRUE,color ="9", name="Arial") + Alignment(wrapText=TRUE, horizontal="ALIGN_CENTER") + Border(color="#0069AA", position=c("TOP","RIGHT","BOTTOM","LEFT"), pen=c("BORDER_THICK","BORDER_THICK","BORDER_THICK","BORDER_THICK")) 
+sheet1<-createSheet(wb,sheetName="Training Set Report") 
+sheet2<-createSheet(wb,sheetName="Test Set Report")
+sheet3<-createSheet(wb,sheetName = "Churn Reason")
+xlsx.addTitle<-function(sheet, rowIndex, title, titleStyle){ 
+  rows <-createRow(sheet,rowIndex=rowIndex) 
+  sheetTitle <-createCell(rows, colIndex=1) 
+  setCellValue(sheetTitle[[1,1]], title) 
+  setCellStyle(sheetTitle[[1,1]], titleStyle) 
+}
+addDataFrame(TrainPredictionStatusCall(fileinput), sheet1, startRow=3, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainModelPredictionSummaryOverall(fileinput), sheet1, startRow=9, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainModelPredictionSummaryHigh(fileinput), sheet1, startRow=14, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1)) 
+addDataFrame(TrainModelPredictionSummaryMedium(fileinput), sheet1, startRow=19, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainModelPredictionSummaryLow(fileinput), sheet1, startRow=24, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainCPIScore(fileinput), sheet1, startRow=29, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainTariffPlan(fileinput), sheet1, startRow=42, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainRegion(fileinput), sheet1, startRow=52, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TrainValueSegmentation(fileinput), sheet1, startRow=62, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+
+addDataFrame(TestPredictionStatusCall(fileinput), sheet2, startRow=3, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TestCPIScore(fileinput), sheet2, startRow=8, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TestTariffPlan(fileinput), sheet2, startRow=20, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TestRegion(fileinput), sheet2, startRow=30, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+addDataFrame(TestValueSegmentation(fileinput), sheet2, startRow=40, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+
+autoSizeColumn(sheet1, colIndex=c(1:6))
+autoSizeColumn(sheet2, colIndex=c(1:6))
+saveWorkbook(wb,file=paste("Churn_Report_",noquote(format(Sys.Date(),"%d%m%Y")),".xlsx",sep=""))
+return(wb)
+}
