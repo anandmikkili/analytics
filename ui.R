@@ -1,5 +1,3 @@
-library(shiny)
-library(shinydashboard)
 shinyUI(
   dashboardPage(
     dashboardHeader(title = "6D Telecom Solutions"),
