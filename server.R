@@ -31,7 +31,10 @@ shinyServer(function(input, output){
     dataset<-TrainCPIScore(fileinput)
     dataset
   })
-  
+   output$table_trainAON<-renderTable({
+    dataset<-TrainAon(fileinput)
+    dataset
+  })  
   output$table_trainTrf<-renderTable({
     dataset<-TrainTariffPlan(fileinput)
     dataset
@@ -73,7 +76,10 @@ shinyServer(function(input, output){
     dataset<-TrainCPIScore(fileinput)
     str(dataset)
   })
-  
+   output$text_trainAON<-renderPrint({
+    dataset<-TrainAon(fileinput)
+    str(dataset)
+  })  
   output$text_trainTrf<-renderPrint({
     dataset<-TrainTariffPlan(fileinput)
     str(dataset)
@@ -100,6 +106,11 @@ shinyServer(function(input, output){
     dataset<-TestCPIScore(fileinput)
     dataset
   })
+  output$table_testAON<-renderTable({
+    dataset<-TestAON(fileinput)
+    dataset
+  })
+  
   output$table_testTrf<-renderTable({
     dataset<-TestTariffPlan(fileinput)
     dataset
@@ -122,6 +133,12 @@ shinyServer(function(input, output){
     dataset<-TestCPIScore(fileinput)
     str(dataset)
   })
+  
+   output$text_testAON<-renderPrint({
+    dataset<-TestAON(fileinput)
+    str(dataset)
+  })
+  
   output$text_testTrf<-renderPrint({
     dataset<-TestTariffPlan(fileinput)
     str(dataset)
