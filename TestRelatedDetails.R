@@ -20,22 +20,23 @@ TestCPIScore<- function(fileinput){
   return(TestCPIScore)
 }
 
-#TestAon<- function(fileinput){
-#  TestAon=sqldf("")
- # return(TestAon)
-#}
-
 TestTariffPlan<- function(fileinput){
-  TestTariffPlan=sqldf("SELECT M3M4M5_TARIFF_PLAN TestTariffPlan, SUM(CASE WHEN TESTPREDICTED = 'Y' THEN 1 ELSE 0 END) ModelPredictedNonUsercount,SUM(CASE WHEN ACTUAL_STATUS='Y' THEN 1 ELSE 0 END)ActualChurners, SUM(CASE WHEN TESTPREDICTED = 'Y' AND ACTUAL_STATUS='Y' THEN 1 ELSE 0 END) ModelPostValidationAccuracy FROM fileinput  WHERE  TEST_ASPU_STATUS IN ('H','M','L') GROUP BY M3M4M5_TARIFF_PLAN")
+  TestTariffPlan=sqldf("SELECT M1M2M3_TARIFF_PLAN TestTariffPlan, SUM(CASE WHEN TESTPREDICTED = 'Y' THEN 1 ELSE 0 END) ModelPredictedNonUsercount,SUM(CASE WHEN ACTUAL_STATUS='Y' THEN 1 ELSE 0 END)ActualChurners, SUM(CASE WHEN TESTPREDICTED = 'Y' AND ACTUAL_STATUS='Y' THEN 1 ELSE 0 END) ModelPostValidationAccuracy FROM fileinput  WHERE  TEST_ASPU_STATUS IN ('H','M','L') GROUP BY M1M2M3_TARIFF_PLAN;")
   return(TestTariffPlan)
 }
 
 TestRegion<- function(fileinput){
-  TestRegion=sqldf("SELECT M3M4M5_REGION Province, SUM(CASE WHEN TESTPREDICTED = 'Y' THEN 1 ELSE 0 END)ModelPredictedNonUsercount, SUM(CASE WHEN ACTUAL_STATUS='Y'  THEN 1 ELSE 0 END)ActualChurner, SUM(CASE WHEN TESTPREDICTED='Y' AND ACTUAL_STATUS='Y'  THEN 1 ELSE 0 END)ModelPostValidationAccuracy FROM fileinput WHERE  TEST_ASPU_STATUS IN ('H','M','L') GROUP BY M3M4M5_REGION")
+  TestRegion=sqldf("SELECT M1M2M3_REGION Province, SUM(CASE WHEN TESTPREDICTED = 'Y' THEN 1 ELSE 0 END)ModelPredictedNonUsercount, SUM(CASE WHEN ACTUAL_STATUS='Y'  THEN 1 ELSE 0 END)ActualChurner, SUM(CASE WHEN TESTPREDICTED='Y' AND ACTUAL_STATUS='Y'  THEN 1 ELSE 0 END)ModelPostValidationAccuracy FROM fileinput WHERE  TEST_ASPU_STATUS IN ('H','M','L') GROUP BY M1M2M3_REGION;")
   return(TestRegion)
 }
 
 TestValueSegmentation<- function(fileinput){
-  TestValueSegmentation=sqldf("SELECT M3M4M5_VALUE_SEG_STATUS STATUS, SUM(CASE WHEN TESTPREDICTED = 'Y' THEN 1 ELSE 0 END)ModelPredictedNonUsercount,  SUM(CASE WHEN ACTUAL_STATUS='Y' THEN 1 ELSE 0 END)ActualChurners, SUM(CASE WHEN TESTPREDICTED='Y' AND ACTUAL_STATUS='Y' THEN 1 ELSE 0 END)ModelPostValidationAccuracy FROM fileinput WHERE  TEST_ASPU_STATUS IN ('H','M','L')  GROUP BY M3M4M5_VALUE_SEG_STATUS")
+  TestValueSegmentation=sqldf("SELECT M1M2M3_VALUE_SEG_STATUS STATUS, SUM(CASE WHEN TESTPREDICTED = 'Y' THEN 1 ELSE 0 END)ModelPredictedNonUsercount,  SUM(CASE WHEN ACTUAL_STATUS='Y' THEN 1 ELSE 0 END)ActualChurners, SUM(CASE WHEN TESTPREDICTED='Y' AND ACTUAL_STATUS='Y' THEN 1 ELSE 0 END)ModelPostValidationAccuracy FROM fileinput WHERE  TEST_ASPU_STATUS IN ('H','M','L')  GROUP BY M1M2M3_VALUE_SEG_STATUS;")
   return(TestValueSegmentation)
 }
+
+TestAON<- function(fileinput){
+  TestAON=sqldf("select case when AON_MONTHS between 0 and 3 then 'AON(0-3)' when AON_MONTHS between 4 and 6 then 'AON(4-6)'  when AON_MONTHS between 7 and 12 then 'AON(7-12)'  when AON_MONTHS between 13 and 24 then 'AON(13-24)' when AON_MONTHS >24 then 'AON(>24)' else 'NA' end AON , case when AON_MONTHS between 0 and 3 then '1' when AON_MONTHS between 4 and 6 then '2'  when AON_MONTHS between 7 and 12 then '3'  when AON_MONTHS between 13 and 24 then '4'  when AON_MONTHS >24 then '5' else '6' end AON_O , SUM(TotalPredicted) TotalPredicted,SUM(ActualChurners) ActualChurners, SUM(MatchingCount) MatchingCount,(SUM(MatchingCount)/SUM(TotalPredicted))*100 MatchingPercentage FROM (SELECT M3_AON_MONTHS AON_MONTHS, sum(case when TRAINPREDICTED = 'Y' then 1 else 0 end)TotalPredicted,sum(case when ACTUAL_STATUS = 'Y' then 1 else 0 end)ActualChurners,sum(case when TRAINPREDICTED = 'Y' and ACTUAL_STATUS='Y' then 1 else 0 end)MatchingCount from fileinput where TRAIN_ASPU_STATUS IN ('H','M','L') group by AON_MONTHS ORDER BY AON_MONTHS)A GROUP BY AON,AON_O order by AON_O");
+  return(TestAON)
+}
+
