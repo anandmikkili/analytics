@@ -1,14 +1,7 @@
-library(shiny)
-library(shinydashboard)
-library(data.table)
-library(sqldf)
-library(plotly)
-library(xlsx)
-source("D:\\D\\Rscript\\Reporting_GUI\\TrainRelatedDetails.R")
-source("D:\\D\\Rscript\\Reporting_GUI\\TestRelatedDetails.R")
-source("D:\\D\\Rscript\\Reporting_GUI\\ReportingExcel.R")
+source("TrainRelatedDetails.R")
+source("TestRelatedDetails.R")
+source("ReportingExcel.R")
 shinyServer(function(input, output){
-  fileinput <- fread("D:\\D\\Rscript\\Reporting_GUI\\FULL_REQ.txt")
   
   #TrainDataCall
   output$table_trainps<-renderTable({
