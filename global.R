@@ -1,6 +1,7 @@
-set.seed(1337)
 library(shiny)
 library(shinydashboard)
 library(data.table)
 library(sqldf)
+library(plotly)
+library(xlsx)
 setwd("")
