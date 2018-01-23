@@ -1,11 +1,5 @@
 SummaryReports<-function(){
 wb<-createWorkbook(type="xlsx") 
-
-#setwd("C:\\Users\\rashmi.s\\Desktop\\")
-#source("C:\\Users\\rashmi.s\\Desktop\\RFiles\\LatestChanges\\TrainRelatedDetails.R")
-#source("C:\\Users\\rashmi.s\\Desktop\\RFiles\\LatestChanges\\TestRelatedDetails.R")
-#fileinput <- fread("C:\\Users\\rashmi.s\\Desktop\\CHURN\\DATA_REPORTING\\FULL_REQ.txt")
-
 TITLE_STYLE <- CellStyle(wb)+ Font(wb, heightInPoints=16, color="blue",isBold=TRUE, underline=1)
 TABLE_ROWNAMES_STYLE <- CellStyle(wb) + Font(wb,color="black", isBold=TRUE)
 TABLE_TARGET_STYLE<-CellStyle(wb) + Font(wb, heightInPoints=10, isBold=TRUE, color ="9", name="Arial") + Fill(foregroundColor="#0069AA")
@@ -33,13 +27,15 @@ addDataFrame(TrainCPIScore(fileinput), sheet1, startRow=29, startColumn=1, colna
 addDataFrame(TrainTariffPlan(fileinput), sheet1, startRow=42, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
 addDataFrame(TrainRegion(fileinput), sheet1, startRow=52, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
 addDataFrame(TrainValueSegmentation(fileinput), sheet1, startRow=62, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
-
+addDataFrame(TrainAon(fileinput), sheet1, startRow=72, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+  
 addDataFrame(TestPredictionStatusCall(fileinput), sheet2, startRow=3, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
 addDataFrame(TestCPIScore(fileinput), sheet2, startRow=8, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
 addDataFrame(TestTariffPlan(fileinput), sheet2, startRow=20, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
 addDataFrame(TestRegion(fileinput), sheet2, startRow=30, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
 addDataFrame(TestValueSegmentation(fileinput), sheet2, startRow=40, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
-
+addDataFrame(TestAon(fileinput), sheet2, startRow=50, startColumn=1, colnamesStyle = TABLE_COLNAMES_STYLE, rownamesStyle = TABLE_ROWNAMES_STYLE,showNA=FALSE,colStyle=list(`1`=CS2,`2`=CS1,`3`=CS1,`4`=CS1,`5`=CS1,`6`=CS1))
+  
 autoSizeColumn(sheet1, colIndex=c(1:6))
 autoSizeColumn(sheet2, colIndex=c(1:6))
 saveWorkbook(wb,file=paste("Churn_Report_",noquote(format(Sys.Date(),"%d%m%Y")),".xlsx",sep=""))
