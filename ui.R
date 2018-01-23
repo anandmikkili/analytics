@@ -137,7 +137,7 @@ shinyUI(
             tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_testValue"))
           )
         )),
-      tabItem("downReports", fluidPage(
+      tabItem("downReports", h2("DOWNLOAD REPORTS"),fluidPage(
         fluidRow(
           column(width = 8),
           column(width = 4,
@@ -155,7 +155,7 @@ shinyUI(
           )
         )
       )),
-      tabItem("uploadReports",fluidPage(
+      tabItem("uploadReports",h2("UPLOAD REPORTS"),fluidPage(
         fluidRow(
           column(width = 8),
           column(width = 4,
