@@ -1,7 +1,15 @@
-source("TrainRelatedDetails.R")
-source("TestRelatedDetails.R")
-source("ReportingExcel.R")
+library(shiny)
+library(shinydashboard)
+library(data.table)
+library(sqldf)
+library(plotly)
+library(xlsx)
+library(C50)
+source("D:\\D\\Rscript\\Reporting_GUI\\TrainRelatedDetails.R")
+source("D:\\D\\Rscript\\Reporting_GUI\\TestRelatedDetails.R")
+source("D:\\D\\Rscript\\Reporting_GUI\\ReportingExcel.R")
 shinyServer(function(input, output){
+  fileinput <- fread("D:\\D\\Rscript\\Reporting_GUI\\FULL_REQ.txt")
   
   #TrainDataCall
   output$table_trainps<-renderTable({
@@ -9,32 +17,30 @@ shinyServer(function(input, output){
     dataset
   })
   
-  output$table_trainov<-renderTable({
-    dataset<-TrainModelPredictionSummaryOverall(fileinput)
-    dataset
+  output$trainSummary<-renderTable({
+    segment<-input$segments
+    if(segment == "OverAll"){
+        dataset<-TrainModelPredictionSummaryOverall(fileinput)
+        dataset
+    }
+    else if(segment == "High"){
+      dataset<-TrainModelPredictionSummaryHigh(fileinput)
+      dataset
+    }
+    else if(segment == "Medium"){
+      dataset<-TrainModelPredictionSummaryMedium(fileinput)
+      dataset
+    }else if(segment == "Low"){
+      dataset<-TrainModelPredictionSummaryLow(fileinput)
+      dataset
+    }
   })
   
-  output$table_trainOH<-renderTable({
-   dataset<-TrainModelPredictionSummaryHigh(fileinput)
-   dataset
-})
-  
-  output$table_trainOM<-renderTable({
-    dataset<-TrainModelPredictionSummaryMedium(fileinput)
-    dataset
-  })
-  output$table_trainOL<-renderTable({
-    dataset<-TrainModelPredictionSummaryLow(fileinput)
-    dataset
-  })
   output$table_trainCPI<-renderTable({
     dataset<-TrainCPIScore(fileinput)
     dataset
   })
-   output$table_trainAON<-renderTable({
-    dataset<-TrainAon(fileinput)
-    dataset
-  })  
+  
   output$table_trainTrf<-renderTable({
     dataset<-TrainTariffPlan(fileinput)
     dataset
@@ -54,32 +60,31 @@ shinyServer(function(input, output){
     dataset<-TrainPredictionStatusCall(fileinput)
     str(dataset)
   })
-
-  output$text_trainov<-renderPrint({
-    dataset<-TrainModelPredictionSummaryOverall(fileinput)
-    str(dataset)
+  
+  output$trainSummarytext<-renderPrint({
+    segment<-input$segments
+    if(segment == "OverAll"){
+      dataset<-TrainModelPredictionSummaryOverall(fileinput)
+      summary(dataset)
+    }
+    else if(segment == "High"){
+      dataset<-TrainModelPredictionSummaryHigh(fileinput)
+      summary(dataset)
+    }
+    else if(segment == "Medium"){
+      dataset<-TrainModelPredictionSummaryMedium(fileinput)
+      summary(dataset)
+    }else if(segment == "Low"){
+      dataset<-TrainModelPredictionSummaryLow(fileinput)
+      summary(dataset)
+    }
   })
   
-  output$text_trainOH<-renderPrint({
-    dataset<-TrainModelPredictionSummaryHigh(fileinput)
-    str(dataset)
-  })
-  output$text_trainOM<-renderPrint({
-    dataset<-TrainModelPredictionSummaryMedium(fileinput)
-    str(dataset)
-  })
-  output$text_trainOL<-renderPrint({
-    dataset<-TrainModelPredictionSummaryLow(fileinput)
-    str(dataset)
-  })
   output$text_trainCPI<-renderPrint({
     dataset<-TrainCPIScore(fileinput)
     str(dataset)
   })
-   output$text_trainAON<-renderPrint({
-    dataset<-TrainAon(fileinput)
-    str(dataset)
-  })  
+  
   output$text_trainTrf<-renderPrint({
     dataset<-TrainTariffPlan(fileinput)
     str(dataset)
@@ -106,11 +111,6 @@ shinyServer(function(input, output){
     dataset<-TestCPIScore(fileinput)
     dataset
   })
-  output$table_testAON<-renderTable({
-    dataset<-TestAON(fileinput)
-    dataset
-  })
-  
   output$table_testTrf<-renderTable({
     dataset<-TestTariffPlan(fileinput)
     dataset
@@ -133,12 +133,6 @@ shinyServer(function(input, output){
     dataset<-TestCPIScore(fileinput)
     str(dataset)
   })
-  
-   output$text_testAON<-renderPrint({
-    dataset<-TestAON(fileinput)
-    str(dataset)
-  })
-  
   output$text_testTrf<-renderPrint({
     dataset<-TestTariffPlan(fileinput)
     str(dataset)
@@ -173,5 +167,25 @@ shinyServer(function(input, output){
     },
     contentType="application/xlsx" 
   )
+  
+  output$choose_y <- renderUI({
+    is_factor <- sapply(iris, FUN = is.factor)
+    y_choices <- names(iris)[is_factor]
+    selectInput('choose_y', label = 'Choose Target Variable', choices = y_choices)
+  })
+  
+  output$choose_x <- renderUI({
+    x_choices <- names(iris)[!names(iris) %in% input$choose_y]
+    checkboxGroupInput('choose_x', label = 'Choose Predictors', choices = x_choices)
+  })
+  
+  observeEvent(input$add_button, {
+    form <- paste(isolate(input$choose_y), '~', paste(isolate(input$choose_x), collapse = '+'))
+    c50_fit <- eval(parse(text = sprintf("C5.0(%s, data = iris)", form)))
+    output$tree_summary <- renderPrint(summary(c50_fit))
+    output$tree_plot_c50 <- renderPlot({
+      plot(c50_fit)
+    })
+  })
   
 })
