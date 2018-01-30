@@ -6,10 +6,13 @@ library(plotly)
 library(xlsx)
 library(C50)
 source("D:\\D\\Rscript\\Reporting_GUI\\TrainRelatedDetails.R")
-source("D:\\D\\Rscript\\Reporting_GUI\\TestRelatedDetails.R")
+source("D:\\D\\Rscript\\Reporting_GUI\\testRelatedDetails.R")
 source("D:\\D\\Rscript\\Reporting_GUI\\ReportingExcel.R")
 shinyServer(function(input, output){
   fileinput <- fread("D:\\D\\Rscript\\Reporting_GUI\\FULL_REQ.txt")
+  treeinput <- fread("D:\\D\\Rscript\\Reporting_GUI\\Train_Sample.csv")
+  treeinput$CHURN_STATUS<-as.factor(treeinput$CHURN_STATUS)
+  
   
   #TrainDataCall
   output$table_trainps<-renderTable({
@@ -101,49 +104,57 @@ shinyServer(function(input, output){
   })
   
   
-  #TestDataCall
-  output$table_testStatus<-renderTable({
-    dataset<-TestPredictionStatusCall(fileinput)
+  #treeinputDataCall
+  output$table_treeinputStatus<-renderTable({
+    dataset<-treeinputPredictionStatusCall(fileinput)
     dataset
   })
   
-  output$table_testCPI<-renderTable({
-    dataset<-TestCPIScore(fileinput)
+  output$table_treeinputCPI<-renderTable({
+    dataset<-treeinputCPIScore(fileinput)
     dataset
   })
-  output$table_testTrf<-renderTable({
-    dataset<-TestTariffPlan(fileinput)
+  output$table_treeinputTrf<-renderTable({
+    dataset<-treeinputTariffPlan(fileinput)
     dataset
   })
-  output$table_testRgn<-renderTable({
-    dataset<-TestRegion(fileinput)
+  output$table_treeinputRgn<-renderTable({
+    dataset<-treeinputRegion(fileinput)
     dataset
   })
-  output$table_testValue<-renderTable({
-    dataset<-TestValueSegmentation(fileinput)
-    dataset
-  })
-  
-  output$text_testStatus<-renderPrint({
-    dataset<-TestPredictionStatusCall(fileinput)
+  output$table_treeinputValue<-renderTable({
+    dataset<-treeinputValueSegmentation(fileinput)
     dataset
   })
   
-  output$text_testCPI<-renderPrint({
-    dataset<-TestCPIScore(fileinput)
-    str(dataset)
-  })
-  output$text_testTrf<-renderPrint({
-    dataset<-TestTariffPlan(fileinput)
-    str(dataset)
-  })
-  output$text_testRgn<-renderPrint({
-    dataset<-TestRegion(fileinput)
-    str(dataset)
-  })
-  output$text_testValue<-renderPrint({
-    dataset<-TestValueSegmentation(fileinput)
+  output$text_treeinputStatus<-renderPrint({
+    dataset<-treeinputPredictionStatusCall(fileinput)
     dataset
+  })
+  
+  output$text_treeinputCPI<-renderPrint({
+    dataset<-treeinputCPIScore(fileinput)
+    str(dataset)
+  })
+  output$text_treeinputTrf<-renderPrint({
+    dataset<-treeinputTariffPlan(fileinput)
+    str(dataset)
+  })
+  output$text_treeinputRgn<-renderPrint({
+    dataset<-treeinputRegion(fileinput)
+    str(dataset)
+  })
+  output$text_treeinputValue<-renderPrint({
+    dataset<-treeinputValueSegmentation(fileinput)
+    dataset
+  })
+  #Detailed Reports.
+  
+  output$table <- DT::renderDataTable({
+    DT::datatable(fileinput,filter = 'top',extensions = c('Buttons','AutoFill','ColReorder'), 
+    options = list(autoFill=TRUE,colReorder=TRUE,dom = 'Blfrtip',
+    buttons = list('copy','print',list(extend = 'collection',
+    buttons = c('csv', 'excel', 'pdf'),text = 'Download'))))
   })
   
   #ReportingMethods
@@ -168,20 +179,23 @@ shinyServer(function(input, output){
     contentType="application/xlsx" 
   )
   
+  #Decision Trees
+  
   output$choose_y <- renderUI({
-    is_factor <- sapply(iris, FUN = is.factor)
-    y_choices <- names(iris)[is_factor]
+    is_factor <- sapply(treeinput, FUN = is.factor)
+    y_choices <- names(treeinput)[is_factor]
     selectInput('choose_y', label = 'Choose Target Variable', choices = y_choices)
   })
   
   output$choose_x <- renderUI({
-    x_choices <- names(iris)[!names(iris) %in% input$choose_y]
+    x_choices <- names(treeinput)[!names(treeinput) %in% input$choose_y]
     checkboxGroupInput('choose_x', label = 'Choose Predictors', choices = x_choices)
   })
   
   observeEvent(input$add_button, {
+    treeinput[is.na(treeinput)]<-0
     form <- paste(isolate(input$choose_y), '~', paste(isolate(input$choose_x), collapse = '+'))
-    c50_fit <- eval(parse(text = sprintf("C5.0(%s, data = iris)", form)))
+    c50_fit <- eval(parse(text = sprintf("C5.0(%s, data = treeinput)", form)))
     output$tree_summary <- renderPrint(summary(c50_fit))
     output$tree_plot_c50 <- renderPlot({
       plot(c50_fit)

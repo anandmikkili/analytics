@@ -15,8 +15,7 @@ shinyUI(
                                                                                                                                            menuItem("Value Segment",tabName = "trainvaluesegment")),
                  menuItem("Test Summary Reports", tabName = "testsummaryReport", startExpanded = TRUE,
                           menuItem("Prediction Status",tabName = "testpredstatus"),menuItem("CPI Score",tabName = "testcpiScore"),menuItem("Age On Network",tabName = "testaon"),menuItem("Tariff",tabName = "testtariff"),menuItem("Region",tabName = "testregion"),menuItem("Value Segment",tabName = "testvaluesegment")),
-                  menuItem("Detailed Reports", tabName = "detailedReport",startExpanded = TRUE,
-                          menuItem("A",tabName = "DA"),menuItem("B",tabName = "DB")),
+                  menuItem("Detailed Reports", tabName = "detailedReport",startExpanded = TRUE),
                  menuItem("Churn Reason Reports",tabName = "churnreasonReport",startExpanded = TRUE,
                           menuItem("Churn Reason Segments",tabName = "CA"),menuItem("Visualize Churn Reason",tabName = "CB")),
                  menuItem("Churn Report Files",tabName = "churnReportFiles",startExpanded = TRUE,
@@ -138,6 +137,15 @@ shinyUI(
             tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_testValue"))
           )
         )),
+      
+      tabItem("detailedReport", fluidPage(fluidRow(
+        column(width = 12,
+               box(
+                title = "Table",icon = icon("table"),width = NULL, status = "primary",
+                div(style = 'overflow-x: scroll', DT::dataTableOutput('table'))
+              ))
+        
+      ))),
       tabItem("downReports", h2("DOWNLOAD REPORTS"),fluidPage(
         fluidRow(
           column(width = 8),
