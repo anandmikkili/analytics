@@ -21,7 +21,7 @@ shinyUI(
                  menuItem("Churn Report Files",tabName = "churnReportFiles",startExpanded = TRUE,
                           menuItem("Down Load Reports",tabName = "downReports"),menuItem("Upload Reports",tabName = "uploadReports")),
                  menuItem("Algorithm Details", tabName = "algodetails",startExpanded = TRUE,
-                          menuItem("Decision Tree", tabName = "decisiontree"),menuItem("Logistic Regression", tabName = "logisticreg"))),
+                          menuItem("Decision Tree", tabName = "decisiontree"),menuItem("Modelling", tabName = "modelling"))),
         menuItem("CAR",tabName = "car",icon = icon("heartbeat", lib="font-awesome"), startExpanded = TRUE,menuItem("Train Summary Reports", tabName = "a",startExpanded = TRUE,
                                                                                                                    menuItem("Prediction Summary",tabName = "b"),menuItem("ARPU Status",tabName = "c", startExpanded = TRUE,menuSubItem("High",tabName = "d"),menuSubItem("Medium",tabName = "e"),menuSubItem("Low",tabName = "f")) ,menuItem("CPI Score",tabName = "g"),menuItem("Age On Network",tabName = "h"),menuItem("Tariff",tabName = "j"),menuItem("Region",tabName = "k"),menuItem("Value Segment",tabName = "l"))),
         menuItem("Data Analytics",tabName = "dataanalytics",icon = icon("eye", lib="font-awesome"),startExpanded = TRUE,menuItem("Train Summary Reports", tabName = "m",startExpanded = TRUE,
@@ -34,21 +34,31 @@ shinyUI(
           fluidRow(
             tabsetPanel(
               tabPanel(title="Table",icon = icon("table"), tableOutput("table_trainps")),
-              tabPanel(title="Plot",icon = icon("bar-chart-o"),plotlyOutput("plot_trainps", height = "200px"),selectInput("select", "Select", label = h2("Selection Pane"),choices = list(TotalTrainingSet = "TotalTrainingSet", High = "High",Medium="Medium",Low="Low"))),
+              tabPanel(title="Plot",icon = icon("bar-chart-o"),column(width=9,plotOutput("barplot")),column(width = 3,
+                                                                                                            box(title="Select Segment",width = NULL, status = "primary", solidHeader = TRUE,
+                                                                                                                selectInput("segments", "",
+                                                                                                                            choices = c(
+                                                                                                                              "TotalTrainingSet"="TotalTrainingSet",
+                                                                                                                              "High" = "High",
+                                                                                                                              "Medium" = "Medium",
+                                                                                                                              "Low" = "Low"
+                                                                                                                            ))
+                                                                                                            ))),
               tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_trainps"))
             )
+            
           ))),
         
         tabItem("trainArpu", fluidPage(fluidRow(
           column(width = 9,
                  tabsetPanel(
                    tabPanel(title="Table",icon = icon("table"), tableOutput("trainSummary")),
-                   tabPanel(title="Plot",icon = icon("bar-chart-o"),plotlyOutput("y", height = "200px"),selectInput("select", "Select", label = h2("Selection Pane"),choices = list(TotalTrainingSet = "TotalTrainingSet", High = "High",Medium="Medium",Low="Low"))),
+                   tabPanel(title="Plot",icon = icon("bar-chart-o"),plotOutput("barplot_arpu")),
                    tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("trainSummarytext"))
                  )),
           column(width = 3,
                  box(title="Select Segment",width = NULL, status = "primary", solidHeader = TRUE,
-                     selectInput("segments", "",
+                     selectInput("segmentsV", "",
                                  choices = c(
                                    "OverAll"="OverAll",
                                    "High" = "High",
@@ -96,9 +106,9 @@ shinyUI(
         )),
       tabItem("testpredstatus", h2("PREDICTION STATUS"),fluidPage(
           tabsetPanel(
-            tabPanel(title="Table",icon = icon("table"), tableOutput("table_testStatus")),
+            tabPanel(title="Table",icon = icon("table"), tableOutput("table_testov")),
             tabPanel(title="Plot",icon = icon("bar-chart-o"),plotOutput("plot_testStatus")),
-            tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_testStatus"))
+            tabPanel(title="Text",icon = icon("th"),verbatimTextOutput("text_testov"))
           )
         )),
       tabItem("testcpiScore", h2("CHURN PROBABILITY INDEX"),fluidPage(
@@ -186,7 +196,8 @@ shinyUI(
         column(width = 8,
                tabsetPanel(
                  tabPanel(title="Tree Plot",icon = icon("bar-chart-o"),plotOutput("tree_plot_c50")),
-                 tabPanel(title="Tree Summary",icon = icon("tree"),verbatimTextOutput("tree_summary"))
+                 tabPanel(title="Tree Summary",icon = icon("tree"),verbatimTextOutput("tree_summary")),
+                 tabPanel(title="Confusion Matrix",icon = icon("tree"),plotOutput("cf_plot_c50"))
                )
         ),
         column(width = 4,
@@ -198,7 +209,72 @@ shinyUI(
         
       )
       
+      )),
+      tabItem("modelling", fluidPage(
+        tabsetPanel(
+        tabPanel("Dataset",
+                 fluidRow(
+                   column(1),
+                   column(10,
+                          fluidRow(
+                            column(4, selectInput("dataset_type", label = h4("Chooses Type of Datset"), c("Build-in Dataset", "Upload CSV")))
+                          ),
+                          fluidRow(
+                            column(12, uiOutput("dataset_parameter_panel"))
+                          ),
+                          fluidRow(column(12, uiOutput("dataset_result_panel")))
+                   )
+                 )
+        ),
+        
+        ###################################################################################################
+        #Statistics Test
+        tabPanel("Statistics Test",
+                 fluidRow(
+                   column(1),
+                   column(10,
+                          fluidRow(
+                            column(4, selectInput("statistics_method", label = h4("Choose Statistics Test"), c("Regression", "Paired T Test", "One-way ANOVA", "MANOVA"))),
+                            uiOutput("statistics_variable_panel")
+                          ),
+                          uiOutput("statistics_parameter_panel"),
+                          fluidRow(column(12, uiOutput("statistics_result_panel")))
+                   )
+                 )
+        ),
+        
+        ###################################################################################################
+        #Clustering
+        tabPanel("Clustering",
+                 fluidRow(
+                   column(1),
+                   column(10,
+                          fluidRow(
+                            column(4, selectInput("clustering_method", label = h4("Choose Clustering Method"), c("K-Means", "EM", "DBSCAN", "Spectral"), selected = "K-Means"))
+                          ),
+                          uiOutput("clustering_parameters_panel"),
+                          fluidRow(column(12, uiOutput("clustering_result_panel")))
+                   )
+                 )
+        ),
+        
+        ###################################################################################################
+        #Classification
+        tabPanel("Classification",
+                 fluidRow(
+                   column(1),
+                   column(10,
+                          fluidRow(
+                            column(4, selectInput("classification_method", label = h4("Choose Classification Method"), c("Decision Tree", "Random Forest", "K-Nearest Neighbors", "Support Vector Machine", "Naive Bayes Classifier", "Feed-Forward Neural Network"), selected = "Decision Tree")),
+                            uiOutput("class_attribute_panel")
+                          ),
+                          uiOutput("classification_parameters_panel"),
+                          fluidRow(column(12, uiOutput("classification_result_panel")))
+                   )
+                 )
+        ))
       ))
+      
       
       )
       
