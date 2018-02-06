@@ -22,10 +22,15 @@ shinyUI(
                           menuItem("Down Load Reports",tabName = "downReports"),menuItem("Upload Reports",tabName = "uploadReports")),
                  menuItem("Algorithm Details", tabName = "algodetails",startExpanded = TRUE,
                           menuItem("Decision Tree", tabName = "decisiontree"),menuItem("Modelling", tabName = "modelling"))),
-        menuItem("CAR",tabName = "car",icon = icon("heartbeat", lib="font-awesome"), startExpanded = TRUE,menuItem("Train Summary Reports", tabName = "a",startExpanded = TRUE,
-                                                                                                                   menuItem("Prediction Summary",tabName = "b"),menuItem("ARPU Status",tabName = "c", startExpanded = TRUE,menuSubItem("High",tabName = "d"),menuSubItem("Medium",tabName = "e"),menuSubItem("Low",tabName = "f")) ,menuItem("CPI Score",tabName = "g"),menuItem("Age On Network",tabName = "h"),menuItem("Tariff",tabName = "j"),menuItem("Region",tabName = "k"),menuItem("Value Segment",tabName = "l"))),
-        menuItem("Data Analytics",tabName = "dataanalytics",icon = icon("eye", lib="font-awesome"),startExpanded = TRUE,menuItem("Train Summary Reports", tabName = "m",startExpanded = TRUE,
-                                                                                                                                 menuItem("Prediction Summary",tabName = "n"),menuItem("ARPU Status",tabName = "o", startExpanded = TRUE,menuSubItem("High",tabName = "p"),menuSubItem("Medium",tabName = "q"),menuSubItem("Low",tabName = "r")) ,menuItem("CPI Score",tabName = "s"),menuItem("Age On Network",tabName = "t"),menuItem("Tariff",tabName = "u"),menuItem("Region",tabName = "v"),menuItem("Value Segment",tabName = "w")))
+        menuItem("CAR",tabName = "car",icon = icon("heartbeat", lib="font-awesome"), startExpanded = TRUE,
+                 menuItem("Consumer Data Details",tabName = "consumer_data_details"),menuItem("Consumer Behavior Pattern")),
+        menuItem("Data Analytics",tabName = "dataanalytics",icon = icon("eye", lib="font-awesome"),startExpanded = TRUE,
+                 menuItem("Study of Churn Prediction ",tabName = "study_of_churn"),
+                 menuItem("Data Preprocessing ",tabName = "data_preprocessing"),
+                 menuItem("Statistical Analysis ",tabName = "statistical_analysis"),
+                 menuItem("Clustering ",tabName = "clustering_process"),
+                 menuItem("Classification ",tabName = "classification_process"),
+                 menuItem("Future Estimation",tabName = "future_estimation"))
         
       )),
     dashboardBody(
@@ -273,7 +278,106 @@ shinyUI(
                    )
                  )
         ))
-      ))
+      )),
+      tabItem("consumer_data_details", fluidPage(fluidRow(
+        column(width = 12,
+               box(
+                 title = "Latest 3 Months Data", width = NULL, status = "primary",solidHeader = TRUE,
+                 selectInput("data_period", "Range ID",multiple = FALSE,selectize = TRUE,width = '100px',
+                             choices = c(
+                               "201801" = 201801,
+                               "201712" = 201712,
+                               "201711" = 201711,
+                               "201710" = 201711
+                             )
+                 ),
+                 div(style = 'overflow-x: scroll', DT::dataTableOutput('123'))
+               )
+        )
+        
+      ))),
+      tabItem("study_of_churn",fluidPage(fluidRow(
+        column(width = 12,
+               box(
+                 title = "Churn Prediction Comparision", width = NULL, status = "primary",solidHeader = TRUE,
+                 fluidRow(
+                   column(width=3,box(width = NULL, status = "primary", solidHeader = TRUE,
+                                      selectInput("dataset_first", label = h4("Choose First Dataset"),multiple = FALSE,selectize = TRUE,width = '180px',
+                                                  choices = getDatasetList(), selected = "201801.csv"
+                                      )
+                   )),
+                   column(width=3,box(width = NULL, status = "primary", solidHeader = TRUE,
+                                      selectInput("dataset_second", label = h4("Choose Second Dataset"),multiple = FALSE,selectize = TRUE,width = '180px',
+                                                  choices = getDatasetList(),selected = "201801.csv"
+                                      )
+                   )),
+                   uiOutput("attribute_list_panel"),
+                   column(width=2,box(width = NULL, status = "primary", solidHeader = TRUE,
+                                      actionButton('show_button', label = h5('Show'), width = '60px')
+                                      
+                   ))
+                 )
+                 
+                 
+               )
+        )
+        
+      ))),
+      tabItem("data_preprocessing", fluidPage(
+        fluidRow(
+          column(1),
+          column(10,
+                 fluidRow(
+                   column(4, selectInput("dataset_type1", label = h4("Chooses Type of Datset"), c("Build-in Dataset", "Upload CSV")))
+                 ),
+                 fluidRow(
+                   column(12, uiOutput("dataset_parameter_panel1"))
+                 ),
+                 fluidRow(column(12, uiOutput("dataset_result_panel1")))
+          )
+        )
+      )),
+      tabItem("statistical_analysis",
+              fluidRow(
+                column(1),
+                column(10,
+                       fluidRow(
+                         column(4, selectInput("statistics_method1", label = h4("Choose Statistics Test"), c("Regression", "Paired T Test", "One-way ANOVA", "MANOVA"))),
+                         uiOutput("statistics_variable_panel1")
+                       ),
+                       uiOutput("statistics_parameter_panel1"),
+                       fluidRow(column(12, uiOutput("statistics_result_panel1")))
+                )
+              )
+      ),
+      tabItem("clustering_process",
+              fluidRow(
+                column(1),
+                column(10,
+                       fluidRow(
+                         column(4, selectInput("clustering_method1", label = h4("Choose Clustering Method"), c("K-Means", "EM", "DBSCAN", "Spectral"), selected = "K-Means"))
+                       ),
+                       uiOutput("clustering_parameters_panel1"),
+                       fluidRow(column(12, uiOutput("clustering_result_panel1")))
+                )
+              )
+      ),    
+      tabItem("classification_process",
+              fluidRow(
+                column(1),
+                column(10,
+                       fluidRow(
+                         column(4, selectInput("classification_method1", label = h4("Choose Classification Method"), c("Decision Tree", "Random Forest", "K-Nearest Neighbors", "Support Vector Machine", "Naive Bayes Classifier", "Feed-Forward Neural Network"), selected = "Decision Tree")),
+                         uiOutput("class_attribute_panel1")
+                       ),
+                       uiOutput("classification_parameters_panel1"),
+                       fluidRow(column(12, uiOutput("classification_result_panel1")))
+                )
+              )
+      )
+      
+      
+      
       
       
       )
